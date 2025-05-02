@@ -31,6 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_native_splash: ^2.4.6
+  provider: ^6.0.0
+  shared_preferences: ^2.2.0
+  flutter_launcher_icons: ^0.14.3
  # Background color of the splash screen
 
   # The following adds the Cupertino Icons font to your application.
@@ -40,6 +43,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  remove_alpha_ios: true
     
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -70,6 +79,12 @@ flutter:
     - assets/images/p5.jpg
     - assets/images/p6.jpg
     - assets/images/p7.jpg
+    - assets/images/side4.jpg
+    - assets/images/food2.jpg
+    - assets/images/food1.jpg
+    - assets/images/side1.jpg
+    - assets/images/food3.jpg
+    - assets/images/side.jpg
     
 
 
