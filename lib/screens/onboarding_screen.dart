@@ -9,8 +9,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
-
-  // Content for onboarding pages
+ 
   final List<Map<String, dynamic>> pages = [
     {
       'centerImage': 'assets/images/food1.jpg',

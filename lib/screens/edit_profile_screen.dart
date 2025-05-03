@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:waiter/providers/user_profile_notifier.dart';
-
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+const EditProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -272,16 +271,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _handleSaveProfile() async {
-    // Hide keyboard
+
     FocusScope.of(context).unfocus();
-    
-    // Clear previous messages
     setState(() {
       _errorMessage = null;
       _successMessage = null;
     });
     
-    // Validate form
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -298,8 +294,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           setState(() {
             _successMessage = 'Profile updated successfully!';
           });
-          
-          // Wait a moment and go back
           Future.delayed(const Duration(seconds: 2), () {
             if (mounted) {
               Navigator.pop(context);

@@ -4,18 +4,17 @@ import 'dart:convert';
 class AuthService {
   static const String _isLoggedInKey = 'is_logged_in';
   static const String _hasRegisteredKey = 'has_registered';
-  static const String _userProfileKey = 'user_profile';
+  static const String userProfileKey = 'user_profile';
 
   // User model to store user data
   static Future<Map<String, dynamic>> getUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
-    final userProfileJson = prefs.getString(_userProfileKey);
+    final userProfileJson = prefs.getString(userProfileKey);
     
     if (userProfileJson != null) {
       return json.decode(userProfileJson);
     }
     
-    // Return default profile if none exists
     return {
       'email': '',
       'firstName': '',
@@ -25,21 +24,15 @@ class AuthService {
     };
   }
   
-  // Save user profile data
+
   static Future<bool> saveUserProfile(Map<String, dynamic> profileData) async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.setString(_userProfileKey, json.encode(profileData));
+    return await prefs.setString(userProfileKey, json.encode(profileData));
   }
 
-  // Register a new user
   static Future<bool> register(String email, String password, String firstName, String lastName) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
-      // In a real app, you would make an API call to register the user
-      // For this demo, we'll just store the user info locally
-      
-      // Create user profile data
       final userData = {
         'email': email,
         'firstName': firstName,
@@ -49,7 +42,7 @@ class AuthService {
       };
       
       // Save user data
-      await prefs.setString(_userProfileKey, json.encode(userData));
+      await prefs.setString(userProfileKey, json.encode(userData));
       
       // Set login status
       await prefs.setBool(_isLoggedInKey, true);
@@ -70,7 +63,7 @@ class AuthService {
       // In a real app, you would validate credentials with an API
       // For this demo, we'll simulate successful login
       
-      final userProfileJson = prefs.getString(_userProfileKey);
+      final userProfileJson = prefs.getString(userProfileKey);
       
       // Check if there's a stored profile
       if (userProfileJson != null) {

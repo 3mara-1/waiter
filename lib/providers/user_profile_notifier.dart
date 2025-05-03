@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert'; 
+import 'package:waiter/services/auth_service.dart';
 
 class UserProfile {
   final String email;
@@ -16,10 +18,9 @@ class UserProfile {
     required this.notificationsEnabled,
   });
 
-  // Full name getter
-  String get name => '$firstName $lastName';
 
-  // Create a copy with method for updating fields
+  String get name => '$firstName $lastName'.trim().isEmpty ? email : '$firstName $lastName'; 
+
   UserProfile copyWith({
     String? email,
     String? firstName,
@@ -36,12 +37,11 @@ class UserProfile {
     );
   }
 
-  // Convert to and from JSON for storage
   Map<String, dynamic> toJson() {
     return {
       'email': email,
       'firstName': firstName,
-      'lastName': lastName, 
+      'lastName': lastName,
       'imageUrl': imageUrl,
       'notificationsEnabled': notificationsEnabled,
     };
@@ -50,118 +50,124 @@ class UserProfile {
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
       email: json['email'] ?? '',
-      firstName: json['firstName'] ?? '',
-      lastName: json['lastName'] ?? '',
-      imageUrl: json['imageUrl'] ?? 'assets/images/profile_placeholder.jpg',
+      firstName: json['firstName'] ?? '', 
+      lastName: json['lastName'] ?? '',   
+      imageUrl: json['imageUrl'] ?? 'assets/images/profile_placeholder.jpg', 
       notificationsEnabled: json['notificationsEnabled'] ?? true,
     );
   }
 
-  // Default profile
+  
   factory UserProfile.defaultProfile() {
     return UserProfile(
       email: 'user@example.com',
-      firstName: 'User',
-      lastName: '',
-      imageUrl: 'assets/images/profile_placeholder.jpg',
+      firstName: 'User', 
+      lastName: '',       
+      imageUrl: 'assets/images/profile_placeholder.jpg', 
       notificationsEnabled: true,
     );
   }
 }
 
+
 class UserProfileNotifier extends ChangeNotifier {
-  late UserProfile _userProfile;
-  
+ 
+  UserProfile _userProfile = UserProfile.defaultProfile();
+  bool _isLoading = true; 
+
   UserProfileNotifier() {
-    _userProfile = UserProfile.defaultProfile();
     _loadProfile();
   }
 
   UserProfile get userProfile => _userProfile;
+  bool get isLoading => _isLoading; 
 
-  // Load profile from shared preferences
   Future<void> _loadProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? email = prefs.getString('user_email');
-    final String? firstName = prefs.getString('user_firstName');
-    final String? lastName = prefs.getString('user_lastName');
-    final bool notificationsEnabled = prefs.getBool('user_notifications_enabled') ?? true;
+    _isLoading = true; 
+    
 
-    if (email != null) {
-      _userProfile = UserProfile(
+    final prefs = await SharedPreferences.getInstance();
+   
+   
+    final String? userProfileJson = prefs.getString(AuthService.userProfileKey);
+
+    UserProfile loadedProfile = UserProfile.defaultProfile(); 
+
+    if (userProfileJson != null) {
+      try {
+       
+        final Map<String, dynamic> userProfileMap = json.decode(userProfileJson);
+        
+        loadedProfile = UserProfile.fromJson(userProfileMap);
+      } catch (e) {
+        print("Error decoding user profile from SharedPreferences: $e");
+        
+      }
+    }
+   
+
+    _userProfile = loadedProfile; 
+    _isLoading = false;          
+    notifyListeners();           
+  }
+  Future<void> _saveProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+   
+    final userProfileJson = json.encode(_userProfile.toJson());
+    await prefs.setString(AuthService.userProfileKey, userProfileJson); 
+  }
+
+  Future<bool> updateProfile({
+    String? email,
+    String? firstName,
+    String? lastName,
+    String? imageUrl, 
+  }) async {
+    try {
+      
+      _userProfile = _userProfile.copyWith(
         email: email,
-        firstName: firstName ?? 'User',
-        lastName: lastName ?? '',
-        imageUrl: 'assets/images/profile_placeholder.jpg',
-        notificationsEnabled: notificationsEnabled,
+        firstName: firstName,
+        lastName: lastName,
+        imageUrl: imageUrl,
       );
+      await _saveProfile(); 
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print("Error updating profile: $e");
+      return false;
+    }
+  }
+  Future<void> setNotificationsEnabled(bool value) async {
+    if (_userProfile.notificationsEnabled != value) {
+      _userProfile = _userProfile.copyWith(notificationsEnabled: value);
+      await _saveProfile();
       notifyListeners();
     }
   }
 
-  // Save profile to shared preferences
-  Future<void> _saveProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_email', _userProfile.email);
-    await prefs.setString('user_firstName', _userProfile.firstName);
-    await prefs.setString('user_lastName', _userProfile.lastName);
-    await prefs.setBool('user_notifications_enabled', _userProfile.notificationsEnabled);
-  }
 
-  // Update user profile
- Future<bool> updateProfile({
-  String? email,
-  String? firstName,
-  String? lastName,
-  String? imageUrl,
-}) async {
-  try {
-    _userProfile = _userProfile.copyWith(
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      imageUrl: imageUrl,
-    );
-    await _saveProfile();
-    notifyListeners();
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-  // Toggle notifications
-  Future<void> setNotificationsEnabled(bool value) async {
-    _userProfile = _userProfile.copyWith(notificationsEnabled: value);
-    await _saveProfile();
-    notifyListeners();
-  }
-
-  // Set user profile after login/signup
   Future<void> setUserProfile({
     required String email,
     String? firstName,
     String? lastName,
+    String? imageUrl, 
   }) async {
     _userProfile = UserProfile(
       email: email,
-      firstName: firstName ?? 'User',
+      firstName: firstName ?? '', 
       lastName: lastName ?? '',
-      imageUrl: 'assets/images/profile_placeholder.jpg',
-      notificationsEnabled: true,
+      imageUrl: imageUrl ?? 'assets/images/profile.jpg', 
+      notificationsEnabled: _userProfile.notificationsEnabled,
     );
-    await _saveProfile();
+    await _saveProfile(); 
     notifyListeners();
   }
 
-  // Clear user profile on logout
   Future<void> clearUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('user_email');
-    await prefs.remove('user_firstName');
-    await prefs.remove('user_lastName');
-    
-    _userProfile = UserProfile.defaultProfile();
+    _userProfile = UserProfile.defaultProfile(); 
+
     notifyListeners();
   }
 }

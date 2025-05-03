@@ -2,8 +2,8 @@ class FeedItem {
   final String title;
   final String subtitle;
   final String imagePath;
-  final String category;  // Added category property
-  final double rating;    // Added rating property
+  final String category;  
+  final double rating;    
   bool isFavorite;
 
   FeedItem({
@@ -14,8 +14,6 @@ class FeedItem {
     required this.rating,
     this.isFavorite = false,
   });
-  
-  // Clone method to create a new instance with updated values
   FeedItem copyWith({
     String? title,
     String? subtitle,
@@ -41,7 +39,7 @@ List<FeedItem> feedItems = [
     subtitle: "Oceanfront getaway",
     imagePath: "assets/images/p7.jpg",
     category: "Restaurants",
-    rating: 4.7,
+    rating: 4.2,
     isFavorite: false
   ),
   FeedItem(
@@ -127,9 +125,8 @@ class Restaurant {
     required this.feed,
   });
   
-  // Method to sync the favorite status with related FeedItem
+  
   void syncFavoriteStatus() {
-    // Find the corresponding feedItem and update its status
     for (var item in feedItems) {
       if (item.title == feed.title) {
         item.isFavorite = isFavorite;
@@ -138,8 +135,6 @@ class Restaurant {
     }
   }
 }
-
-// Create a list of restaurants corresponding to feedItems
 List<Restaurant> restaurants = [
     Restaurant(
       id: '1',

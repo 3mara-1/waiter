@@ -98,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(color: Colors.red),
                     ),
                   ),
-
                 const SizedBox(height: 30),
 
                 // Login Button

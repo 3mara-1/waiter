@@ -1,34 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // استيراد provider
+import 'package:provider/provider.dart'; 
 import 'package:waiter/model/feed_model.dart';
 import 'package:waiter/screens/shop_profile.dart';
-// استيراد ملف FavoritesNotifier (تأكد من المسار الصحيح)
 import 'package:waiter/providers/favorites_notifier.dart';
 
 class FavoritesPage extends StatefulWidget {
-  const FavoritesPage({Key? key}) : super(key: key);
+  
 
   @override
   State<FavoritesPage> createState() => FavoritesPageState();
 }
 
 class FavoritesPageState extends State<FavoritesPage> {
-  // لم نعد بحاجة لقائمة favoriteItems المحلية أو دالة _toggleFavorite هنا
 
   @override
   void initState() {
     super.initState();
-    // لا حاجة للتهيئة هنا، الـ Notifier يدير القائمة
   }
 
   @override
   Widget build(BuildContext context) {
-    // استخدم Consumer للاستماع إلى التغييرات في FavoritesNotifier
+    
     return Consumer<FavoritesNotifier>(
       builder: (context, favoritesNotifier, child) {
-        // احصل على قائمة المفضلة من الـ Notifier
+   
         final favoriteItems = favoritesNotifier.favoriteItems;
-
         return Scaffold(
          
           body: favoriteItems.isEmpty
@@ -65,7 +61,7 @@ class FavoritesPageState extends State<FavoritesPage> {
                   itemCount: favoriteItems.length,
                   itemBuilder: (context, index) {
                     final item = favoriteItems[index];
-                    // مرر الـ Notifier إلى buildFavoriteCard
+                 
                     return buildFavoriteCard(context, item, favoritesNotifier);
                   },
                 ),
@@ -74,7 +70,7 @@ class FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  // ويدجت بناء بطاقة العنصر المفضل (الآن يأخذ FavoritesNotifier كوسيط)
+  
   Widget buildFavoriteCard(BuildContext context, FeedItem item, FavoritesNotifier favoritesNotifier) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -84,19 +80,18 @@ class FavoritesPageState extends State<FavoritesPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              // Shop page سيستخدم أيضًا FavoritesNotifier
+             
               builder: (context) => Shop(item: item),
             ),
           ).then((_) {
-            // لا حاجة لـ setState هنا بعد العودة، لأن Provider سيحدث الواجهة تلقائيًا
-            // عندما تتغير حالة المفضلة في Shop ويتم استدعاء notifyListeners
+            
           });
         },
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(
             children: [
-              // Image placeholder with fallback
+              
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
@@ -119,7 +114,7 @@ class FavoritesPageState extends State<FavoritesPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              // Text content
+              
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,17 +138,14 @@ class FavoritesPageState extends State<FavoritesPage> {
                   ],
                 ),
               ),
-              // Favorite icon
+              
               IconButton(
-                // تحقق من حالة المفضلة باستخدام isItemFavorite من الـ Notifier
                 icon: Icon(
                   favoritesNotifier.isItemFavorite(item) ? Icons.favorite : Icons.favorite_border,
                   color: const Color(0xFFFF5C00),
                 ),
-                // استخدم دالة toggleFavoriteStatus من الـ Notifier لتغيير الحالة
                 onPressed: () {
                    favoritesNotifier.toggleFavoriteStatus(item);
-                   // يمكنك إظهار SnackBar هنا أيضًا إذا أردت
                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                        content: Text(favoritesNotifier.isItemFavorite(item) ? 'Added to favorites' : 'Removed from favorites'),

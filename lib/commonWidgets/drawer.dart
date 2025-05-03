@@ -20,8 +20,8 @@ class Drawerscreen extends StatelessWidget {
                 color: Color(0xFFFF5C00),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   // عرض اسم المستخدم من الـ Notifier
                   Text(
@@ -33,7 +33,7 @@ class Drawerscreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                   // عرض البريد الإلكتروني من الـ Notifier
+                  
                   Text(
                     userProfile.email,
                      style: TextStyle(
@@ -44,8 +44,7 @@ class Drawerscreen extends StatelessWidget {
                 ],
               ),
             ),
-            // يمكنك إضافة المزيد من ListTile هنا للانتقال لصفحات أخرى
-            // ListTile(
+            //            ListTile(
             //   leading: Icon(Icons.home),
             //   title: Text('Home'),
             //   onTap: (){},
